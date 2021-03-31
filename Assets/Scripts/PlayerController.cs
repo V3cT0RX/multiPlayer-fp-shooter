@@ -1,5 +1,5 @@
 using UnityEngine;
-
+[RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(PlayerMotor))]
 [RequireComponent(typeof(ConfigurableJoint))]
 public class PlayerController : MonoBehaviour
@@ -7,30 +7,38 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float speed = 5f;
     [SerializeField] private float lookSensitivity = 3f;
     [SerializeField] private float thrusterForce = 1000f;
+
     [Header("Spring Settings:")]
     // [SerializeField] private JointProjectionMode projectionMode = JointProjectionMode.PositionAndRotation;
     // [SerializeField] private JointDriveMode jointMode = JointDriveMode.Position;
     [SerializeField] private float jointSpring = 20f;
     [SerializeField] private float jointMaxForce = 40f;
+
+    // Component caching
     private PlayerMotor motor;
     private ConfigurableJoint joint;
+    private Animator animator;
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         motor = GetComponent<PlayerMotor>();
         joint = GetComponent<ConfigurableJoint>();
+        animator = GetComponent<Animator>();
         SetJointSetting(jointSpring);
     }
     void Update()
     {
-        float _xMov = Input.GetAxisRaw("Horizontal");
-        float _zMov = Input.GetAxisRaw("Vertical");
+        float _xMov = Input.GetAxis("Horizontal");
+        float _zMov = Input.GetAxis("Vertical");
 
         Vector3 _movHorizontal = transform.right * _xMov;
         Vector3 _movVertical = transform.forward * _zMov;
 
         //final movement vector
-        Vector3 _velocity = (_movHorizontal + _movVertical).normalized * speed;
+        Vector3 _velocity = (_movHorizontal + _movVertical) * speed;
+        // Apply movement
+        animator.SetFloat("ForwardVelocity", _zMov);
+        // Apply movement
         motor.Move(_velocity);
 
         // Calculate rotation as a 3d vector (turing around)
