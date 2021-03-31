@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7778870165384208188}
   - component: {fileID: 7778870165384208187}
   - component: {fileID: 7778870165384208186}
+  - component: {fileID: -2348182295757841511}
   - component: {fileID: -8395202581762832757}
   - component: {fileID: 8529914490662086204}
   - component: {fileID: 3801983698180549420}
@@ -86,7 +87,6 @@ MonoBehaviour:
   speed: 10
   lookSensitivity: 10
   thrusterForce: 1300
-  projectionMode: 1
   jointSpring: 20
   jointMaxForce: 40
 --- !u!114 &7778870165384208186
@@ -103,6 +103,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 7778870166263344412}
   cameraRotationLimit: 85
+--- !u!114 &-2348182295757841511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7778870165384208183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e32a6174c72946724bee9dd507511b67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  disableOnDeath:
+  - {fileID: 7778870165384208187}
+  - {fileID: 3801983698180549420}
 --- !u!114 &-8395202581762832757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,7 +190,7 @@ MonoBehaviour:
   cam: {fileID: 7778870166263344412}
   mask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 567
 --- !u!114 &4531449826288743330
 MonoBehaviour:
   m_ObjectHideFlags: 0
