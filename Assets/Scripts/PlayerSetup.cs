@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -6,6 +7,10 @@ public class PlayerSetup : NetworkBehaviour
 {
     [SerializeField] Behaviour[] componentsToDisable;
     [SerializeField] string remoteLayerName = "RemotePlayer";
+    [SerializeField] string dontDrawLayerName = "DontDraw";
+    [SerializeField] GameObject playerGraphics;
+    [SerializeField] GameObject playerUIPrefab;
+    private GameObject playerUIInstance;
     Camera sceneCamera;
 
     void Start()
@@ -22,10 +27,25 @@ public class PlayerSetup : NetworkBehaviour
             {
                 sceneCamera.gameObject.SetActive(false);
             }
+            // disable player graphics for local player
+            SetLayerRecursively(playerGraphics, LayerMask.NameToLayer(dontDrawLayerName));
+
+            // create PlayerUI
+            playerUIInstance = Instantiate(playerUIPrefab);
+            playerUIInstance.name = playerUIPrefab.name;
         }
 
         GetComponent<PlayerManager>().Setup();
         // RegisterPlayer();   ......This part of script is put in game manager script.
+    }
+
+    private void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        obj.layer = newLayer;
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerRecursively(child.gameObject, newLayer);
+        }
     }
 
     // void RegisterPlayer()
@@ -56,6 +76,8 @@ public class PlayerSetup : NetworkBehaviour
     }
     void OnDisable()
     {
+        Destroy(playerUIInstance);
+
         if (sceneCamera != null)
         {
             sceneCamera.gameObject.SetActive(true);
