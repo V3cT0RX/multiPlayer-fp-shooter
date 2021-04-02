@@ -2,12 +2,20 @@
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
+
+[RequireComponent(typeof(WeaponManager))]
 public class PlayerShoot : NetworkBehaviour
 {
     private const string PLAYER_TAG = "Player";
-    public PlayerWeapon weapon;
+
+    // [SerializeField] private PlayerWeapon weapon;
+    // [SerializeField] private GameObject weaponGFX;
+    // [SerializeField] private string weaponLayerName = "Weapon";
     [SerializeField] private Camera cam;
     [SerializeField] private LayerMask mask;
+
+    private PlayerWeapon currentWeapon;
+    private WeaponManager weaponManager;
 
     void Start()
     {
@@ -16,13 +24,30 @@ public class PlayerShoot : NetworkBehaviour
             Debug.LogError("PlayerShoot: No camera referenced");
             this.enabled = false;
         }
-
+        weaponManager = GetComponent<WeaponManager>();
+        // weaponGFX.layer = LayerMask.NameToLayer(weaponLayerName);
     }
+
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        currentWeapon = weaponManager.GetCurrentWeapon();
+        if (currentWeapon.fireRate <= 0f)
         {
-            Shoot();
+            if (Input.GetButtonDown("Fire1"))
+            {
+                Shoot();
+            }
+        }
+        else
+        {
+            if (Input.GetButtonDown("Fire1"))
+            {
+                InvokeRepeating("Shoot", 0f, 1f / currentWeapon.fireRate);
+            }
+            else if (Input.GetButtonUp("Fire1"))
+            {
+                CancelInvoke("Shoot");
+            }
         }
     }
 
@@ -30,12 +55,13 @@ public class PlayerShoot : NetworkBehaviour
     [Client]
     void Shoot()
     {
+        Debug.Log("Shoot");
         RaycastHit _hit;
-        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out _hit, weapon.range, mask))
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out _hit, currentWeapon.range, mask))
         {
             if (_hit.collider.tag == PLAYER_TAG)
             {
-                CmdPlayerShot(_hit.collider.name, weapon.damage);
+                CmdPlayerShot(_hit.collider.name, currentWeapon.damage);
             }
             // Debug.Log("We hit" + _hit.collider.name);
         }
