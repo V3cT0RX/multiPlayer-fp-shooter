@@ -23,6 +23,6 @@ public class WeaponManager : NetworkBehaviour
         _weaponIns.transform.SetParent(weaponHolder);
 
         if (isLocalPlayer)
-            _weaponIns.layer = LayerMask.NameToLayer(weaponLayerName);
+            Util.SetLayerRecursively(_weaponIns, LayerMask.NameToLayer(weaponLayerName));
     }
 }

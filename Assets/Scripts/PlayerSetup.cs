@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 [RequireComponent(typeof(PlayerManager))]
+[RequireComponent(typeof(PlayerController))]
 public class PlayerSetup : NetworkBehaviour
 {
     [SerializeField] Behaviour[] componentsToDisable;
@@ -33,6 +34,14 @@ public class PlayerSetup : NetworkBehaviour
             // create PlayerUI
             playerUIInstance = Instantiate(playerUIPrefab);
             playerUIInstance.name = playerUIPrefab.name;
+
+            // Config Player UI
+            PlayerUI ui = playerUIInstance.GetComponent<PlayerUI>();
+            if (ui == null)
+            {
+                Debug.LogError("No Player Component on PlayerUI prefab");
+            }
+            ui.SetContoller(GetComponent<PlayerController>());
         }
 
         GetComponent<PlayerManager>().Setup();

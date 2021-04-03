@@ -51,11 +51,33 @@ public class PlayerShoot : NetworkBehaviour
         }
     }
 
+    #region When Partical System implaments
+    // Is  called on the server when a player shoots
+    // [Command]
+    // void CmdOnShoot()
+    // {
+    //     RpcDoShootEffect();
+    // }
+
+    // // Is called on all clients when we need to do shoot effect
+    // [ClientRpc]
+    // void RpcDoShootEffect()
+    // {
+    //     weaponManager.GetCurrentGraphics().muzzleFlash.play();
+    // }
+    #endregion
 
     [Client]
     void Shoot()
     {
-        Debug.Log("Shoot");
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
+        // We are Shooting, call the OnShoot Method on Server
+        // CmdOnShoot();
+
         RaycastHit _hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out _hit, currentWeapon.range, mask))
         {
