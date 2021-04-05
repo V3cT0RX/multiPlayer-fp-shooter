@@ -11,8 +11,8 @@ public class PlayerSetup : NetworkBehaviour
     [SerializeField] string dontDrawLayerName = "DontDraw";
     [SerializeField] GameObject playerGraphics;
     [SerializeField] GameObject playerUIPrefab;
-    private GameObject playerUIInstance;
-    Camera sceneCamera;
+
+    [HideInInspector] public GameObject playerUIInstance;
 
     void Start()
     {
@@ -23,11 +23,6 @@ public class PlayerSetup : NetworkBehaviour
         }
         else
         {
-            sceneCamera = Camera.main;
-            if (sceneCamera != null)
-            {
-                sceneCamera.gameObject.SetActive(false);
-            }
             // disable player graphics for local player
             SetLayerRecursively(playerGraphics, LayerMask.NameToLayer(dontDrawLayerName));
 
@@ -62,6 +57,7 @@ public class PlayerSetup : NetworkBehaviour
     //     string _ID = "Player" + GetComponent<NetworkIdentity>().netId;
     //     transform.name = _ID;
     // }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -87,10 +83,7 @@ public class PlayerSetup : NetworkBehaviour
     {
         Destroy(playerUIInstance);
 
-        if (sceneCamera != null)
-        {
-            sceneCamera.gameObject.SetActive(true);
-        }
+        GameManager.instance.SetSceneCameraActive(true);
         GameManager.UnRegisterPlayer(transform.name);
     }
 }
