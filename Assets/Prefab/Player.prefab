@@ -675,7 +675,7 @@ MonoBehaviour:
   - {fileID: 7778870167438181009}
   - {fileID: 7778870166263344409}
   deathEffect: {fileID: 2096781936783605449, guid: ebc49b75adf75d6beac69b7ae7451258, type: 3}
-  spawnEffect: {fileID: 7217143383877383724, guid: 79a3ddd95c520989c93333c48b6b51ad, type: 3}
+  spawnEffect: {fileID: 4353852123499899589, guid: cbd5002b6dda0f60c82c83b9703cd0b4, type: 3}
 --- !u!114 &-8395202581762832757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -942,9 +942,9 @@ MonoBehaviour:
   weaponHolder: {fileID: 1234483060}
   PrimaryWeapon:
     name: Gloack
-    damage: 10
+    damage: 5
     range: 100
-    fireRate: 0
+    fireRate: 10
     graphics: {fileID: 3363904700485673862, guid: 381f20a5f693b0378a1bb4dfef964714, type: 3}
 --- !u!1 &7778870166263344409
 GameObject:

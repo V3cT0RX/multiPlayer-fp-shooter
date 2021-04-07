@@ -51,21 +51,34 @@ public class PlayerShoot : NetworkBehaviour
         }
     }
 
-    #region When Partical System implaments
-    // Is  called on the server when a player shoots
-    // [Command]
-    // void CmdOnShoot()
-    // {
-    //     RpcDoShootEffect();
-    // }
+    // Is called on the server when a player shoots
+    [Command]
+    void CmdOnShoot()
+    {
+        RpcDoShootEffect();
+    }
 
-    // // Is called on all clients when we need to do shoot effect
-    // [ClientRpc]
-    // void RpcDoShootEffect()
-    // {
-    //     weaponManager.GetCurrentGraphics().muzzleFlash.play();
-    // }
-    #endregion
+    // Is called on all clients when we need to do shoot effect
+    [ClientRpc]
+    void RpcDoShootEffect()
+    {
+        weaponManager.GetCurrentGraphics().muzzleFlash.Play();
+    }
+
+    // is called on server when we hit somthing, take hitpoint and normal of the surface
+    [Command]
+    void CmdOnHit(Vector3 _pos, Vector3 _normal)
+    {
+        RpcDoHitEffect(_pos, _normal);
+    }
+
+    //  is called on all client, effects
+    [ClientRpc]
+    void RpcDoHitEffect(Vector3 _pos, Vector3 _normal)
+    {
+        GameObject _hitEffect = (GameObject)Instantiate(weaponManager.GetCurrentGraphics().hitEffectPrefab, _pos, Quaternion.LookRotation(_normal));
+        Destroy(_hitEffect, 2f);
+    }
 
     [Client]
     void Shoot()
@@ -76,7 +89,7 @@ public class PlayerShoot : NetworkBehaviour
         }
 
         // We are Shooting, call the OnShoot Method on Server
-        // CmdOnShoot();
+        CmdOnShoot();
 
         RaycastHit _hit;
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out _hit, currentWeapon.range, mask))
@@ -85,9 +98,12 @@ public class PlayerShoot : NetworkBehaviour
             {
                 CmdPlayerShot(_hit.collider.name, currentWeapon.damage);
             }
+            // we hit somthing ,call onhit method on server
+            CmdOnHit(_hit.point, _hit.normal);
             // Debug.Log("We hit" + _hit.collider.name);
         }
     }
+
     [Command]
     void CmdPlayerShot(string _playerID, int _damage)
     {

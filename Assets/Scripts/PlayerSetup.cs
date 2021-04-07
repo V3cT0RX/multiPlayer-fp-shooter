@@ -37,9 +37,10 @@ public class PlayerSetup : NetworkBehaviour
                 Debug.LogError("No Player Component on PlayerUI prefab");
             }
             ui.SetContoller(GetComponent<PlayerController>());
+
+            GetComponent<PlayerManager>().Setup();
         }
 
-        GetComponent<PlayerManager>().Setup();
         // RegisterPlayer();   ......This part of script is put in game manager script.
     }
 
@@ -51,12 +52,6 @@ public class PlayerSetup : NetworkBehaviour
             SetLayerRecursively(child.gameObject, newLayer);
         }
     }
-
-    // void RegisterPlayer()
-    // {
-    //     string _ID = "Player" + GetComponent<NetworkIdentity>().netId;
-    //     transform.name = _ID;
-    // }
 
     public override void OnStartClient()
     {
@@ -83,7 +78,10 @@ public class PlayerSetup : NetworkBehaviour
     {
         Destroy(playerUIInstance);
 
-        GameManager.instance.SetSceneCameraActive(true);
+        if (isLocalPlayer)
+        {
+            GameManager.instance.SetSceneCameraActive(true);
+        }
         GameManager.UnRegisterPlayer(transform.name);
     }
 }

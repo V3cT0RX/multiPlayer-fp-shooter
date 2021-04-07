@@ -20,17 +20,52 @@ public class PlayerManager : NetworkBehaviour
     [SerializeField] private GameObject[] disableGameObjectsOnDeath;
     [SerializeField] private GameObject deathEffect;
     [SerializeField] private GameObject spawnEffect;
+    private bool firstSetup = true;
 
 
     public void Setup()
     {
-        wasEnabled = new bool[disableOnDeath.Length];
-        for (int i = 0; i < wasEnabled.Length; i++)
+        if (isLocalPlayer)
         {
-            wasEnabled[i] = disableOnDeath[i].enabled;
+            //Switch Cameras    
+            GameManager.instance.SetSceneCameraActive(false);
+            GetComponent<PlayerSetup>().playerUIInstance.SetActive(true);
+        }
+
+        CmdBroadCastNewPlayerSetup();
+    }
+    void Update()
+    {
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            RpcTakeDamage(9999);
+        }
+    }
+    [Command]
+    private void CmdBroadCastNewPlayerSetup()
+    {
+        RpcSetupPlayerOnAllClients();
+    }
+
+    [ClientRpc]
+    private void RpcSetupPlayerOnAllClients()
+    {
+        if (firstSetup)
+        {
+            wasEnabled = new bool[disableOnDeath.Length];
+            for (int i = 0; i < wasEnabled.Length; i++)
+            {
+                wasEnabled[i] = disableOnDeath[i].enabled;
+            }
+            firstSetup = false;
         }
         SetDefaults();
     }
+
 
     private void SetDefaults()
     {
@@ -54,29 +89,10 @@ public class PlayerManager : NetworkBehaviour
         if (_col != null)
             _col.enabled = true;
 
-        //Switch Cameras    
-        if (isLocalPlayer)
-        {
-            GameManager.instance.SetSceneCameraActive(false);
-            GetComponent<PlayerSetup>().playerUIInstance.SetActive(true);
-        }
-
         // create Spawn effect
         GameObject _gfxIns = (GameObject)Instantiate(spawnEffect, transform.position, Quaternion.identity);
         Destroy(_gfxIns, 3f);
 
-    }
-
-    void Update()
-    {
-        if (!isLocalPlayer)
-        {
-            return;
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            RpcTakeDamage(9999);
-        }
     }
 
     [ClientRpc]
@@ -133,10 +149,27 @@ public class PlayerManager : NetworkBehaviour
     private IEnumerator Respawn()
     {
         yield return new WaitForSeconds(GameManager.instance.matchSettings.respawnTime);
+
         Transform _spawnPoint = NetworkManager.singleton.GetStartPosition();
         transform.position = _spawnPoint.position;
         transform.rotation = _spawnPoint.rotation;
-        SetDefaults();
+
+        yield return new WaitForSeconds(0.01f);
+
+        Setup();
         Debug.Log(transform.name + "respawned");
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
