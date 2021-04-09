@@ -36,6 +36,10 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
+        if (PauseMenu.IsOn)
+        {
+            return;
+        }
         /*
         Setting target position for spring 
         This make the physics act right when it comes to 
